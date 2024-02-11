@@ -1,2 +1,3 @@
-# yaus
-Yey Another Upgrade Script for Ubuntu
+#Yey Another Upgrade Script 
+
+> for Ubuntu
