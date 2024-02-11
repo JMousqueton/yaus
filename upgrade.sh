@@ -4,19 +4,24 @@ LOG_FILE="/var/log/system_maintenance.log"
 DEBUG=false
 QUIET=false 
 
-# Function to log messages only if DEBUG is true
+# Function to log messages
 log_message() {
-    if $QUIET; then 
-        echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" >> "$LOG_FILE"
+    if ! $QUIET; then
+        echo "$(date '+%Y-%m-%d %H:%M:%S') - INFO - $1" | tee -a "$LOG_FILE"
     else
-         echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" | tee -a "$LOG_FILE"
+        echo "$(date '+%Y-%m-%d %H:%M:%S') - INFO - $1" >> "$LOG_FILE"
     fi
+}
+
+# Function to log errors and exit
+log_error() {
+    echo "$(date '+%Y-%m-%d %H:%M:%S') - ERROR - $1" | tee -a "$LOG_FILE"
+    exit 1
 }
 
 # Ensure the script is run as root
 if [ "$(id -u)" -ne 0 ]; then
-  echo "This script must be run as root" >&2
-  exit 1
+  log_error "This script must be run as root"
 fi
 
 # Update the package lists
@@ -26,9 +31,10 @@ if $DEBUG; then
 else
   apt-get update > /dev/null 2>&1
 fi
+
+# Check for errors in the last command
 if [ "${PIPESTATUS[0]}" -ne 0 ]; then
-  log_message "Failed to update package lists, exiting."
-  exit 1
+  log_error "Failed to update package lists"
 fi
 
 # Check if there are packages to be upgraded
@@ -42,9 +48,10 @@ if [ $upgradable -gt 0 ]; then
   else
     apt-get -y upgrade > /dev/null 2>&1
   fi
+
+  # Check for errors in the last command
   if [ "${PIPESTATUS[0]}" -ne 0 ]; then
-    log_message "Failed to upgrade packages, exiting."
-    exit 1
+    log_error "Failed to upgrade packages"
   fi
 else
   log_message "No packages to upgrade."
@@ -58,6 +65,11 @@ if $DEBUG; then
 else
   apt-get autoremove -y > /dev/null 2>&1
   apt-get autoclean -y > /dev/null 2>&1
+fi
+
+# Check for errors after cleanup commands
+if [ "${PIPESTATUS[0]}" -ne 0 ]; then
+  log_error "Failed during cleanup process"
 fi
 
 # Check if reboot is needed
