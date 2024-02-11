@@ -77,7 +77,7 @@ We welcome contributions from the community! If you have improvements or fixes, 
 
 ## License
 
-This script is made available under the MIT License. This license permits free use, modification, and distribution, provided that the original authorship is credited. Please refer to the `LICENSE` file in the repository for the full legal text.
+This script is made available under the MIT License. This license permits free use, modification, and distribution, provided that the original authorship is credited. Please refer to the [`LICENSE`](LICENSE) file in the repository for the full legal text.
 
 
 
