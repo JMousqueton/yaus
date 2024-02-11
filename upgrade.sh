@@ -2,10 +2,16 @@
 LOG_FILE="/var/log/system_maintenance.log"
 # Enable or disable debug logging ('true' to enable, 'false' to disable)
 DEBUG=false
+QUIET=false 
 
 # Function to log messages only if DEBUG is true
 log_message() {
-    echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" >> "$LOG_FILE"
+    if $QUIET; then 
+        echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" >> "$LOG_FILE"
+    else
+         echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" | tee -a "$LOG_FILE"
+}
+    fi
 }
 
 # Ensure the script is run as root
