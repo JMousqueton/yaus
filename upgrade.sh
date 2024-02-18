@@ -21,7 +21,7 @@ log_error() {
 
 # Ensure the script is run as root
 if [ "$(id -u)" -ne 0 ]; then
-  log_error "This script must be run as root"
+  echo "This script must be run as root"
 fi
 
 # Update the package lists
